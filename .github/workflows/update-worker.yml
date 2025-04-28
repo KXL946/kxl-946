@@ -5,11 +5,11 @@
     分支：
       -主要的
   日程：
-    - cron: "0 1 * * *"
+    - cron: '0 1 * * *'  # 每天凌晨1点自动运行
   workflow_dispatch:       # 支持手动运行
 
 许可：
-  内容：写
+  contents: write          # 第8行，确保缩进正确
 
 工作：
   更新：
@@ -66,6 +66,6 @@
         如果： env.update_needed == 'true'
         用途： Stefanzweifel/git-auto-commit-action@v5
         和：
-          commit_message ：“自动更新为$ {{env.tag_name}}版本$ {
-          commit_author ：“ github-actions [bot] <github-actions [bot]@users.noreply.github.com>>“
+          commit_message ：'将自动更新为版本$ {{env.tag_name}}}'
+          commit_author ：'github-actions [bot] <github-actions [bot]@users.noreply.github.com>'
           push_options ： -force
