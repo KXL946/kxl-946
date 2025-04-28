@@ -1,85 +1,85 @@
-名称：自动更新工作器
+名称：自动更新工人
 
-在:
-  推:
+在：
+  推：
     分支：
-      - 主页
-  日程安排:
-    - cron: "0 1 * * *" # 每天凌晨1点自动运行
+      -主要的
+  日程：
+    - cron: "0 1 * * *"# 每天凌晨1点自动运行0 1 * * *" 
   workflow_dispatch:     # 支持手动运行
 
-权限：
-  目录： 写
+许可：
+  内容：写
 
 工作：
   更新：
-    运行于：ubuntu-latest
+    运行： ubuntu-latest
     步骤：
-      - 名称: 初始化仓库
-        使用：actions/checkout@v4
+      - name: 初始化仓库
+        用途： Action/Checkout@V4
 
-      - 名称: 获取当前本地版本
-        id： 获取本地版本
-        运行： |
+      - name: 获取当前本地版本
+        id：get_local_version
+        运行：|
           echo -e "\033[34m[获取本地版本]\033[0m"
-          如果 [ -f version.txt ]; 那么
-            LOCAL_VERSION=$(cat version.txt)
-            echo "当前本地版本：$LOCAL_VERSION"
-          否则
+          如果[-f版本.txt];然后
+            local_version = $（cat version.txt）
+            echo "当前本地版本: $LOCAL_VERSION"
+          别的
             echo "首次同步，没有本地版本。"
-            LOCAL_VERSION="""
-          输入：          fi
-          echo "LOCAL_VERSION=$LOCAL_VERSION" >> $GITHUB_ENV
+            local_version = “”
+          fi
+          echo “ local_version = $ local_version” >> $ github_env
 
-      - 名称: 获取最新 Release 信息
-        id: 获取版本
-        运行： |
+      - name: 获取最新 Release 信息
+        id ： get_release
+        运行：|
           echo -e "\033[34m[获取最新 Release]\033[0m"
-          API_URL="https://api.github.com/repos/bia-pain-bache/BPB-Worker-Panel/releases"
-          RESPONSE=$(curl -s "$API_URL")
-          LATEST_RELEASE=$(echo "$RESPONSE" | jq -r '.[0]')
-          TAG_NAME=$(echo "$LATEST_RELEASE" | jq -r '.tag_name')
-          DOWNLOAD_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name == "worker.zip") | .browser_download_url')
+          api_url =“ https://api.github.com/repos/bia-pain-bache/bpb-worker-panel/releases”
+          响应= $（curl -s“ $ api_url”）
+          最新_release = $（echo“ $ wendesp” | jq -r'。[0]'）
+          tag_name = $（echo“ $最新_release” | jq -r'.tag_name'）
+          download_url = $（echo“ $ festment_release” | jq -r'。assets [] | select（.name ==“ worker.zip”）| .browser_download_url'）
 
-          if [ -z "$DOWNLOAD_URL" ] || [ "$DOWNLOAD_URL" == "null" ]; then
+          如果[-z“ $ download_url”] || [“ $ download_url” ==“ null”];然后
             echo -e "\033[31m未找到 worker.zip，退出！\033[0m"
-            退出 1
-          输入：          fi
+            出口1
+          fi
 
           echo "最新版本号: $TAG_NAME"
-          echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo“ download_url = $ download_url” >> $ github_env
+          echo“ tag_name = $ tag_name” >> $ github_env
 
-      - 名称: 判断是否需要更新
-        id： 检查更新
-        运行： |
+      - name: 判断是否需要更新
+        id：check_update
+        运行：|
           echo -e "\033[34m[判断是否需要更新]\033[0m"
-          if [ "$LOCAL_VERSION" = "$TAG_NAME" ]; then
+          如果[“ $ local_version” =“ $ tag_name”];然后
             echo -e "\033[32m已经是最新版本，无需更新。\033[0m"
-            echo "UPDATE_NEEDED=false" >> $GITHUB_ENV
-          否则
+            echo “ update_needed = false” >> $ github_env
+          别的
             echo -e "\033[33m发现新版本，需要更新！\033[0m"
-            echo "UPDATE_NEEDED=true" >> $GITHUB_ENV
-          输入：          fi
+            echo “ update_needed = true” >> $ github_env
+          fi
 
-      - 名称: 如果需要，清理旧文件并下载新版本
-        如果：env.UPDATE_NEEDED == 'true'
-        运行： |
+      - name: 如果需要，清理旧文件并下载新版本
+        如果： env.update_needed == 'true'
+        运行：|
           echo -e "\033[34m[清理旧文件]\033[0m"
           rm -rf ./*
           echo -e "\033[34m[下载最新 worker.zip]\033[0m"
-          wget -O worker.zip "$DOWNLOAD_URL"
+          wget -o worker.zip“ $ download_url”
           echo -e "\033[34m[解压 worker.zip]\033[0m"
-          解压 worker.zip
+          UNZIP WORKER.ZIP
           echo -e "\033[34m[删除 worker.zip]\033[0m"
-          rm worker.zip
+          RM Worker.zip
           echo -e "\033[34m[记录新版本号]\033[0m"
-          echo "$TAG_NAME" > version.txt
+          echo“ $ tag_name”> version.txt
 
-      - 名称: 提交更改
-        如果：env.UPDATE_NEEDED == 'true'
-        使用：stefanzweifel/git-auto-commit-action@v5
-        与：
+      - name: 提交更改
+        如果： env.update_needed == 'true'
+        用途：stefanzweifel/git-auto-commit-action@v5
+        和：
           commit_message: "🔄 自动同步最新 Worker 版本：${{ env.TAG_NAME }}"
-          commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          push_options：--force
+          commit_author：“ github-actions [ bot ] <github-actions [ bot ] @users.noreply.github.com >>“
+          push_options ： -force
