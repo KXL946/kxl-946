@@ -1,39 +1,39 @@
 名称：自动更新工作器
 
-在输入：
+在:
   推:
-    分支:
+    分支：
       - 主页
   日程安排:
     - cron: "0 1 * * *" # 每天凌晨1点自动运行
   workflow_dispatch:     # 支持手动运行
 
-权限:
-  目录: 写
+权限：
+  目录： 写
 
-工作:
-  更新:
-    运行于: ubuntu-latest
-    steps:
-      - name: 初始化仓库
-        uses: actions/checkout@v4
+工作：
+  更新：
+    运行于：ubuntu-latest
+    步骤：
+      - 名称: 初始化仓库
+        使用：actions/checkout@v4
 
-      - name: 获取当前本地版本
-        id: get_local_version
-        run: |
+      - 名称: 获取当前本地版本
+        id： 获取本地版本
+        运行： |
           echo -e "\033[34m[获取本地版本]\033[0m"
-          if [ -f version.txt ]; then
+          如果 [ -f version.txt ]; 那么
             LOCAL_VERSION=$(cat version.txt)
-            echo "当前本地版本: $LOCAL_VERSION"
-          else
+            echo "当前本地版本：$LOCAL_VERSION"
+          否则
             echo "首次同步，没有本地版本。"
-            LOCAL_VERSION=""
-          fi
+            LOCAL_VERSION="""
+          输入：          fi
           echo "LOCAL_VERSION=$LOCAL_VERSION" >> $GITHUB_ENV
 
-      - name: 获取最新 Release 信息
-        id: get_release
-        run: |
+      - 名称: 获取最新 Release 信息
+        id: 获取版本
+        运行： |
           echo -e "\033[34m[获取最新 Release]\033[0m"
           API_URL="https://api.github.com/repos/bia-pain-bache/BPB-Worker-Panel/releases"
           RESPONSE=$(curl -s "$API_URL")
@@ -70,16 +70,16 @@
           echo -e "\033[34m[下载最新 worker.zip]\033[0m"
           wget -O worker.zip "$DOWNLOAD_URL"
           echo -e "\033[34m[解压 worker.zip]\033[0m"
-          unzip worker.zip
+          解压 worker.zip
           echo -e "\033[34m[删除 worker.zip]\033[0m"
           rm worker.zip
           echo -e "\033[34m[记录新版本号]\033[0m"
           echo "$TAG_NAME" > version.txt
 
-      - name: 提交更改
-        if: env.UPDATE_NEEDED == 'true'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
+      - 名称: 提交更改
+        如果：env.UPDATE_NEEDED == 'true'
+        使用：stefanzweifel/git-auto-commit-action@v5
+        与：
           commit_message: "🔄 自动同步最新 Worker 版本：${{ env.TAG_NAME }}"
           commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
           push_options：--force
